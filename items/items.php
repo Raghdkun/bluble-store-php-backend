@@ -13,10 +13,10 @@ $userid = filterRequest("usersid");
 
 $stmt = $con->prepare("SELECT items1view.* , 1 as favorite , (items_price - (items_price * items_descount / 100 )) as itemspricedisscount FROM items1view 
 INNER JOIN favorite ON favorite.favorite_itemsid = items1view.items_id AND favorite.favorite_usersid = $userid
-WHERE categories_id = $categoryid
+WHERE cat_id = $categoryid 
 UNION ALL 
 SELECT *  , 0 as favorite , (items_price - (items_price * items_descount / 100 )) as itemspricedisscount FROM items1view
-WHERE  categories_id = $categoryid AND items_id NOT IN  ( SELECT items1view.items_id FROM items1view 
+WHERE  cat_id = $categoryid AND items_id NOT IN  ( SELECT items1view.items_id FROM items1view 
 INNER JOIN favorite ON favorite.favorite_itemsid = items1view.items_id AND favorite.favorite_usersid =  $userid  )");
 
 $stmt->execute();

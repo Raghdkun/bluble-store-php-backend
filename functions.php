@@ -3,6 +3,8 @@
 
 define("MB", 1048576);
 
+date_default_timezone_set("Asia/Damascus");
+
 function filterRequest($requestname)
 {
     return  htmlspecialchars(strip_tags($_POST[$requestname]));
@@ -83,6 +85,44 @@ function insertData($table, $data, $json = true)
     return $count;
 }
 
+function createDynamicLink($dynamicLinkDomain,  $link, $suffix = null) {
+
+    // Set the Firebase Dynamic Links endpoint
+    $endpoint = 'https://firebasedynamiclinks.googleapis.com/v1/shortLinks?key=AAAAJhFuWvQ:APA91bH5M-FzKKaXjqD-caXW69SKrEAzps4cnGa6ZwKkIS2LaWxnp_BbJy3H_5vjgQnyH4bU7OXcfONWf0HkkmUyy2kcan20GM2NFNtQJidRRZtqIb2wYQcyqXxlvUkpXNIxYT9bN5Qz';
+  
+    // Set the request body
+    $body = [
+      'dynamicLinkInfo' => [
+        'domainUriPrefix' => $dynamicLinkDomain,
+        'link' => $link,
+        'androidInfo' => [
+          'androidPackageName' => "com.powerecommerce.ecommerce",
+        ],
+        // 'iosInfo' => [
+        //   'iosBundleId' => $iosBundleId,
+        // ],
+      ],
+      'suffix' => [
+        'option' => $suffix ? $suffix : 'UNGUESSABLE',
+      ],
+    ];
+  
+    // Send a POST request to the endpoint
+    $ch = curl_init($endpoint);
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($body));
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, [
+      'Content-Type: application/json',
+    ]);
+    $response = curl_exec($ch);
+    curl_close($ch);
+  
+    // Return the short dynamic link
+    $response = json_decode($response, true);
+    return $response['shortLink'];
+  }
+
 
 function updateData($table, $data, $where, $json = true)
 {
@@ -125,28 +165,32 @@ function deleteData($table, $where, $json = true)
     return $count;
 }
 
-function imageUpload($imageRequest)
+function imageUpload($dir, $imageRequest)
 {
     global $msgError;
-    $imagename  = rand(1000, 10000) . $_FILES[$imageRequest]['name'];
-    $imagetmp   = $_FILES[$imageRequest]['tmp_name'];
-    $imagesize  = $_FILES[$imageRequest]['size'];
-    $allowExt   = array("jpg", "png", "gif", "mp3", "pdf");
-    $strToArray = explode(".", $imagename);
-    $ext        = end($strToArray);
-    $ext        = strtolower($ext);
+    if (isset($_FILES[$imageRequest])) {
+        $imagename  = rand(1000, 10000) . $_FILES[$imageRequest]['name'];
+        $imagetmp   = $_FILES[$imageRequest]['tmp_name'];
+        $imagesize  = $_FILES[$imageRequest]['size'];
+        $allowExt   = array("jpg", "png", "gif", "mp3", "pdf" , "svg");
+        $strToArray = explode(".", $imagename);
+        $ext        = end($strToArray);
+        $ext        = strtolower($ext);
 
-    if (!empty($imagename) && !in_array($ext, $allowExt)) {
-        $msgError = "EXT";
-    }
-    if ($imagesize > 2 * MB) {
-        $msgError = "size";
-    }
-    if (empty($msgError)) {
-        move_uploaded_file($imagetmp,  "../upload/" . $imagename);
-        return $imagename;
-    } else {
-        return "fail";
+        if (!empty($imagename) && !in_array($ext, $allowExt)) {
+            $msgError = "EXT";
+        }
+        if ($imagesize > 2 * MB) {
+            $msgError = "size";
+        }
+        if (empty($msgError)) {
+            move_uploaded_file($imagetmp,  $dir . "/" . $imagename);
+            return $imagename;
+        } else {
+            return "fail";
+        }
+    }else {
+        return 'empty' ; 
     }
 }
 
@@ -253,3 +297,10 @@ function insertNotify($title, $body, $userid, $topic, $pageid, $pagename)
     $count = $stmt->rowCount();
     return $count;
 }
+
+function generateDeepLink($itemsId) {
+    $baseUrl = 'https://blublestore.com';
+    $path = '/productdetails/' . $itemsId;
+    $deepLink = $baseUrl . $path;
+    return $deepLink;
+  }

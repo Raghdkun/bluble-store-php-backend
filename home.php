@@ -10,9 +10,9 @@ $homeoffers = getAllData("homeoffers" ," 1 = 1 ", null, false);
 
 $alldata['homeoffers'] = $homeoffers;
 
-$categories = getAllData("categories", null, null, false);
+$categories = getAllData("cat", null, null, false);
 
-$alldata['categories'] = $categories;
+$alldata['cat'] = $categories;
 
 $items = getAllData("itemstopselling" ," 1 = 1 ORDER BY countitems DESC ", null, false);
 

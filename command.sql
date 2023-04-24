@@ -14,9 +14,9 @@ LEFT JOIN itemssizes ON itemsvariations.itemsvariations_size_id = itemssizes.ite
 /// items view with colors and sizes
 
 
-SELECT items.*,  categories.* , (items_price - (items_price * items_descount / 100 )) as itemspricedisscount , itemscolors.itemscolors_name AS color, itemssizes.itemssizes_title AS size, itemsvariations_quantity
+SELECT items.*,  cat.* , (items_price - (items_price * items_descount / 100 )) as itemspricedisscount , itemscolors.itemscolors_name AS color, itemssizes.itemssizes_title AS size, itemsvariations_quantity
 FROM items
-INNER JOIN  categories on  items.items_cat = categories.categories_id 
+INNER JOIN  cat on  items.items_cat = cat.cat_id 
 INNER JOIN itemsvariations ON items.items_id = itemsvariations.itemsvariations_itemsid
 LEFT JOIN itemscolors ON itemsvariations.itemsvariations_color_id = itemscolors.itemscolors_id
 LEFT JOIN itemssizes ON itemsvariations.itemsvariations_size_id = itemssizes.itemssizes_id

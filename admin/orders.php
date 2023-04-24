@@ -7,7 +7,7 @@ $orderid = filterRequest("ordersid");
 $userid = filterRequest("usersid");
 
 $data = array(
-    "orders_status" => 2
+    "orders_status" => 3
 );
 
 updateData("orders", $data, "orders_id = $orderid AND orders_status = 2");

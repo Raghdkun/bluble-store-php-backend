@@ -17,5 +17,5 @@ if ($count > 0){
    updateData("users" , $data , "users_email = '$email'") ;
 
 }else { 
-PrintFaliure(" verfiy code is not correct");
+printFailure(" verfiy code is not correct");
 }
